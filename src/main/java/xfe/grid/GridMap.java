@@ -2,8 +2,7 @@ package xfe.grid;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
-import java.util.Random;
+import java.util.*;
 
 public class GridMap {
     public int[][] map;
@@ -20,6 +19,7 @@ public class GridMap {
 
     boolean draw_grids;
     boolean debug;
+    boolean in_flood_fill;
 
     public GridMap(int w, int h, int size) {
         this.width = w;
@@ -29,6 +29,8 @@ public class GridMap {
         this.is_holding_right_mouse = false;
         this.has_lost = false;
         this.has_won = false;
+
+        this.in_flood_fill = false;
 
         this.debug = false;
 
@@ -88,6 +90,51 @@ public class GridMap {
         }
 
         this.map[y][x] = this.get_mine_neighbors(x, y);
+
+        if (this.map[y][x] == 0 && !this.in_flood_fill)
+            this.flood_fill(new Point(x, y));
+    }
+
+    private void flood_fill(Point start) {
+        ArrayList<Point> filled = new ArrayList<>();
+        LinkedList<Point> to_fill = new LinkedList<>();
+
+        to_fill.add(start);
+
+        this.in_flood_fill = true;
+
+        while (!to_fill.isEmpty()) {
+            Point c = to_fill.pop();
+
+            if (filled.contains(c)) continue;
+
+            this.reveal_cell(c.x, c.y);
+            filled.add(c);
+
+            if (this.map[c.y][c.x] != 0)
+                continue;
+
+            int[][] directions = { {0,1}, {1,0}, {0,-1}, {-1,0}, {-1,-1}, {1,-1}, {-1,1}, {1,1} };
+            for (int[] dir : directions) {
+                int nx = c.x + dir[0];
+                int ny = c.y + dir[1];
+                Point neighbor = new Point(nx, ny);
+
+                if (is_valid(nx, ny) && !filled.contains(neighbor) && should_fill(nx, ny)) {
+                    to_fill.add(neighbor);
+                }
+            }
+        }
+
+        this.in_flood_fill = false;
+    }
+
+    private boolean is_valid(int x, int y) {
+        return x >= 0 && x < this.width && y >= 0 && y < this.height;
+    }
+
+    private boolean should_fill(int x, int y) {
+        return this.map[y][x] == -1;
     }
 
     public void flag_cell(int x, int y) {
