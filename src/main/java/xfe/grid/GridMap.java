@@ -12,6 +12,7 @@ public class GridMap {
     int width;
 
     int cell_size;
+    int mine_count;
     public boolean is_holding_right_mouse;
 
     boolean has_won;
@@ -44,6 +45,8 @@ public class GridMap {
     }
 
     public void generate_map(int w, int h, int mine_count) {
+
+        this.mine_count = mine_count;
 
         Random random = new Random();
 
@@ -191,7 +194,7 @@ public class GridMap {
         this.has_won = false;
         this.has_lost = false;
 
-        this.generate_map(this.width, this.height, 11);
+        this.generate_map(this.width, this.height, this.mine_count);
     }
 
     public boolean getDraw_grids() {

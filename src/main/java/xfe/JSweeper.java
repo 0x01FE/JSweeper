@@ -4,41 +4,47 @@ import xfe.grid.GridMap;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-public class Main {
-
-    static final int CELL_SIZE = 32;
-
-    static final int GRID_HEIGHT = 9;
-    static final int GRID_WIDTH = 9;
-
-    static final int HEIGHT = GRID_HEIGHT * CELL_SIZE;
-    static final int WIDTH = GRID_WIDTH * CELL_SIZE;
-
+public class JSweeper {
     public static void main(String[] args) {
-        GridMap game = new GridMap(GRID_WIDTH, GRID_HEIGHT, CELL_SIZE);
-        game.generate_map(GRID_WIDTH, GRID_HEIGHT, 10);
+        SwingUtilities.invokeLater(DifficultyFrame::new);
+    }
+}
 
-        JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+class JSweeperPanel extends JPanel {
+    GridMap game;
 
-        Container contentPane = frame.getContentPane();
+    public JSweeperPanel(int difficulty) {
+        int grid_width = 9;
+        int grid_height = 9;
+        int mine_count = 11;
+        int cell_size = 32;
 
-        JPanel panel = new JPanel() {
-            public void paintComponent(Graphics g) {
-                Graphics2D g2d = (Graphics2D) g;
-
-                g2d.setColor(Color.BLACK);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-
-                game.draw(g2d, this);
+        switch (difficulty) {
+            case 2 -> {
+                grid_width = 16;
+                grid_height = 16;
+                mine_count = 40;
             }
-        };
+            case 3 -> {
+                grid_width = 30;
+                grid_height = 16;
+                mine_count = 99;
+            }
+        }
 
-        panel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        this.game = new GridMap(grid_width, grid_height, cell_size);
+        this.game.generate_map(grid_width, grid_height, mine_count);
 
-        panel.addKeyListener(new KeyListener() {
+        int hres = grid_height * cell_size;
+        int wres = grid_width * cell_size;
+        this.setPreferredSize(new Dimension(wres, hres));
+
+        this.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {}
 
@@ -48,15 +54,14 @@ public class Main {
                     case KeyEvent.VK_R -> game.reset();
                 }
 
-                panel.repaint();
+                JSweeperPanel.this.repaint();
             }
 
             @Override
             public void keyReleased(KeyEvent e) {}
         });
 
-        panel.addMouseListener(new MouseListener()
-        {
+        this.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
@@ -71,7 +76,7 @@ public class Main {
 
                     game.reveal_cell(cell_space.x, cell_space.y);
 
-                    panel.repaint();
+                    JSweeperPanel.this.repaint();
                 } else if (e.getButton() == MouseEvent.BUTTON3) {
                     int x = e.getX();
                     int y = e.getY();
@@ -84,7 +89,7 @@ public class Main {
 
                     game.flag_cell(cell_space.x, cell_space.y);
 
-                    panel.repaint();
+                    JSweeperPanel.this.repaint();
                 }
             }
 
@@ -101,11 +106,29 @@ public class Main {
             public void mouseExited(MouseEvent e) {}
         });
 
-
-        panel.setFocusable(true);
-        contentPane.add(panel, BorderLayout.CENTER);
-        frame.pack();
-        frame.setVisible(true);
+        this.setFocusable(true);
     }
 
+    @Override
+    public void paintComponent(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+
+        g2d.setColor(Color.BLACK);
+        g2d.fillRect(0, 0, getWidth(), getHeight());
+
+        this.game.draw(g2d, this);
+    }
 }
+
+class JSweeperFrame extends JFrame {
+    public JSweeperFrame(int difficulty) {
+        this.setTitle("JSweeper");
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JSweeperPanel panel = new JSweeperPanel(difficulty);
+        this.add(panel);
+        this.pack();
+        this.setVisible(true);
+    }
+}
+
