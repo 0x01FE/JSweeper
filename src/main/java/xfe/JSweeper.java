@@ -52,6 +52,11 @@ class JSweeperPanel extends JPanel {
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_R -> game.reset();
+                    case KeyEvent.VK_ESCAPE -> {
+                        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(JSweeperPanel.this);
+                        topFrame.dispose();
+                        new DifficultyFrame();
+                    }
                 }
 
                 JSweeperPanel.this.repaint();
