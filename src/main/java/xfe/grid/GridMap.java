@@ -160,6 +160,20 @@ public class GridMap {
             }
             y++;
         }
+
+        // Reveal all other cells
+        y = 0;
+        for (int[] row : this.map) {
+            int x = 0;
+            for (int c : row) {
+                if (c == -1) {
+                    this.reveal_cell(x, y);
+                }
+                x++;
+            }
+            y++;
+        }
+
         this.has_won = true;
     }
 
