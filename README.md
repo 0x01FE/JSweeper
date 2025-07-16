@@ -2,7 +2,13 @@
 
 This program is a recreation of the classic game [Minesweeper](https://en.wikipedia.org/wiki/Minesweeper_(video_game)) using pure Java.
 
+Win on easy
+
 ![Image of the program in a win state on easy](.images/minesweeper-win.png)
+
+Loss on medium
+
+![Image of the program in a lose state on medium](.images/minesweeper-lose.png)
 
 ## Difficulties
 

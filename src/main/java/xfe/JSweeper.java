@@ -117,7 +117,7 @@ class JSweeperPanel extends JPanel {
 
         this.setFocusable(true);
 
-        Timer repaintTimer = new Timer(100, e -> JSweeperPanel.this.repaint());
+        Timer repaintTimer = new Timer(10, e -> JSweeperPanel.this.repaint());
         repaintTimer.start();
     }
 
