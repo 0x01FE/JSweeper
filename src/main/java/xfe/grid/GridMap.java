@@ -361,8 +361,20 @@ public class GridMap {
                         // Flagged
                         case -2:
                             this.draw_cell(g, real_x, real_y, Color.GRAY);
-                            g.setColor(Color.RED);
-                            g.drawString("F", real_x, real_y + this.cell_size);
+                            g.setColor(new Color(176, 0, 0));
+
+                            // Upper flag
+                            Polygon tri = new Polygon();
+
+                            tri.addPoint(real_x + (int) Math.floor(this.cell_size / 3.0), real_y + (int) Math.floor(this.cell_size / 4.0));
+                            tri.addPoint(real_x + (int) Math.floor(this.cell_size / 3.0), (real_y + this.cell_size) - (int) Math.floor(this.cell_size / 4.0));
+                            tri.addPoint((real_x + this.cell_size) - (int) Math.floor(this.cell_size / 3.0), real_y + (int) Math.floor(this.cell_size / 2.0));
+
+                            g.fillPolygon(tri);
+
+                            // Pole
+                            g.setColor(new Color(87, 46, 28));
+                            g.drawLine((real_x + (int) Math.floor(this.cell_size / 3.0)) - 1, real_y + (int) Math.floor(this.cell_size / 4.0), (real_x + (int) Math.floor(this.cell_size / 3.0)) - 1, real_y + this.cell_size);
                             break;
                         // Mine
                         case -3:
