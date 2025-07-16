@@ -57,6 +57,10 @@ class JSweeperPanel extends JPanel {
                         topFrame.dispose();
                         new DifficultyFrame();
                     }
+                    case KeyEvent.VK_T -> {
+                        boolean timer = game.get_show_timer();
+                        game.set_show_timer(!timer);
+                    }
                 }
 
                 JSweeperPanel.this.repaint();
@@ -112,6 +116,9 @@ class JSweeperPanel extends JPanel {
         });
 
         this.setFocusable(true);
+
+        Timer repaintTimer = new Timer(100, e -> JSweeperPanel.this.repaint());
+        repaintTimer.start();
     }
 
     @Override
@@ -126,12 +133,15 @@ class JSweeperPanel extends JPanel {
 }
 
 class JSweeperFrame extends JFrame {
+
+    public JSweeperPanel panel;
+
     public JSweeperFrame(int difficulty) {
         this.setTitle("JSweeper");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JSweeperPanel panel = new JSweeperPanel(difficulty);
-        this.add(panel);
+        this.panel = new JSweeperPanel(difficulty);
+        this.add(this.panel);
         this.pack();
         this.setVisible(true);
     }

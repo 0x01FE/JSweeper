@@ -2,6 +2,8 @@ package xfe.grid;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 
 public class GridMap {
@@ -22,6 +24,10 @@ public class GridMap {
     boolean debug;
     boolean in_flood_fill;
 
+    boolean show_timer;
+    long start_time;
+    long end_time;
+
     public GridMap(int w, int h, int size) {
         this.width = w;
         this.height = h;
@@ -30,8 +36,11 @@ public class GridMap {
         this.is_holding_right_mouse = false;
         this.has_lost = false;
         this.has_won = false;
+        this.show_timer = false;
 
         this.in_flood_fill = false;
+
+        this.start_time = Instant.now().toEpochMilli();
 
         this.debug = false;
 
@@ -89,6 +98,7 @@ public class GridMap {
 
         if (this.has_lost) {
             this.map[y][x] = -3;
+            this.end_time = Instant.now().toEpochMilli();
             return;
         }
 
@@ -130,6 +140,14 @@ public class GridMap {
         }
 
         this.in_flood_fill = false;
+    }
+
+    public boolean get_show_timer() {
+        return this.show_timer;
+    }
+
+    public void set_show_timer(boolean v) {
+        this.show_timer = v;
     }
 
     private boolean is_valid(int x, int y) {
@@ -178,6 +196,7 @@ public class GridMap {
         }
 
         this.has_won = true;
+        this.end_time = Instant.now().toEpochMilli();
     }
 
     public void clear_map() {
@@ -193,6 +212,7 @@ public class GridMap {
     public void reset() {
         this.has_won = false;
         this.has_lost = false;
+        this.start_time = Instant.now().toEpochMilli();
 
         this.generate_map(this.width, this.height, this.mine_count);
     }
@@ -404,6 +424,32 @@ public class GridMap {
                 y_offset += this.cell_size;
             }
         }
+
+        // Show timer
+        if (this.show_timer) {
+            g.setColor(Color.BLACK);
+            long now;
+            if (!this.has_won && !this.has_lost) {
+                now = Instant.now().toEpochMilli();
+            } else {
+                now = this.end_time;
+            }
+
+            long t_delta = now - this.start_time;
+
+            Font timeFont = new Font("Arial", Font.BOLD, this.cell_size / 2);
+            g.setFont(timeFont);
+
+            Date date = new Date(t_delta);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("mm:ss:SSS");
+
+            String formattedDate = sdf.format(date);
+
+            g.drawString(formattedDate, p.getWidth() - (this.cell_size * 3), this.cell_size);
+        }
+
+        g.setFont(font);
 
         // Print game over
         if (this.has_lost) {
